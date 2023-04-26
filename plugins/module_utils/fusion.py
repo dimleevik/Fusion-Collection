@@ -39,11 +39,13 @@ except ImportError:
     HAS_FUSION = False
 
 from os import environ
+from urllib import parse
 import platform
 
 TOKEN_EXCHANGE_URL = "https://api.pure1.purestorage.com/oauth2/1.0/token"
 VERSION = 1.0
 USER_AGENT_BASE = "Ansible"
+BASE_PATH = "api/1.0"
 
 
 def get_fusion(module):
@@ -58,7 +60,8 @@ def get_fusion(module):
     key_file = module.params["key_file"]
     if HAS_FUSION:
         config = fusion.Configuration()
-        config.host = environ.get("FUSION_HOST", config.host)
+        if "FUSION_API_HOST" in environ:
+            config.host = parse.urljoin(environ["FUSION_API_HOST"], BASE_PATH)
         config.token_endpoint = environ.get(
             "FUSION_TOKEN_ENDPOINT", config.token_endpoint
         )
